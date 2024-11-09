@@ -62,14 +62,14 @@ export const Sign = () => {
   return (
     <section>
       <h1 className='fade-in-up text-center pt-0 text-4xl sm:text-5xl lg:text-6xl mt-0 text-transparent bg-clip-text bg-gradient-to-br from-[#13163F] to-[#67E331] font-extrabold'>
-        Welcome  
+        Hexadepth
       </h1>
 
-      <div className='fade-in-right bg-green-100 grid md:grid-cols-2 my-6 md:my-12 py-14 mr-2 '>
-        <div className='md:ml-10 pl-8 md:bg-green-100 rounded-md'>
-          <p className='font-bold my-2 text-transparent bg-clip-text bg-gradient-to-br from-[#13163F] to-[#67E331] md:text-5xl text-4xl'>Hexadepth</p>
+      <div className='fade-in-right grid md:grid-cols-2 my-6 md:my-12 py-12 '>
+        <div className='md:ml-10'>
+          <p className='font-bold my-2 text-transparent bg-clip-text bg-gradient-to-br from-[#13163F] to-[#67E331] md:text-4xl text-3xl'>ImagineAI</p>
           <p className='text-[#ADB7BE] mb-4 mt-4 max-w-md md:text-xl text-lg '>
-          Our website showcases a groundbreaking model in the medical domain, beginning with dehazing X-ray images and advancing to 3D CT volume reconstruction, enabling comprehensive 6D modeling with enhanced rotational and spatial features.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis dolores quos quod porro aperiam incidunt magni repudiandae ab. Quia esse quisquam ab cupiditate. Et tempora voluptatibus inventore nesciunt? Ducimus, voluptates.
           </p>
           <Image className="rounded-md my-5 "
             src='/images/dp-ai.jpeg'
@@ -82,7 +82,7 @@ export const Sign = () => {
           </Link>
         </div>
 
-        <div className=' fade-in-right bg-gradient-to-br from-[#13163F] to-[#67E331] rounded-lg p-7 mt-8 pr-5 mr-4'>
+        <div className=' fade-in-right bg-gradient-to-br from-[#13163F] to-[#67E331] rounded-lg p-7 mt-8'>
           <div className='flex flex-row max-w-full justify-evenly'>
             <TabButton
               selectTab={() => handleTabChange('SignUp')}
