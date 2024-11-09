@@ -62,14 +62,17 @@ export const Sign = () => {
   return (
     <section>
       <h1 className='fade-in-up text-center pt-0 text-4xl sm:text-5xl lg:text-6xl mt-0 text-transparent bg-clip-text bg-gradient-to-br from-[#13163F] to-[#67E331] font-extrabold'>
-        Hexadepth
+       Welcome To Hexadepth
       </h1>
 
-      <div className='fade-in-right grid md:grid-cols-2 my-6 md:my-12 py-12 '>
-        <div className='md:ml-10'>
-          <p className='font-bold my-2 text-transparent bg-clip-text bg-gradient-to-br from-[#13163F] to-[#67E331] md:text-4xl text-3xl'>ImagineAI</p>
-          <p className='text-[#ADB7BE] mb-4 mt-4 max-w-md md:text-xl text-lg '>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis dolores quos quod porro aperiam incidunt magni repudiandae ab. Quia esse quisquam ab cupiditate. Et tempora voluptatibus inventore nesciunt? Ducimus, voluptates.
+      <div className='fade-in-right grid md:grid-cols-2 my-6 md:my-12 py-12 p-8 md:bg-gray-200 rounded-lg'>
+        <div className='md:ml-10 bg-gray-200 p-8 rounded-md'>
+          <p className='font-bold my-2 text-transparent bg-clip-text bg-gradient-to-br from-[#13163F] to-[#67E331] md:text-5xl text-4xl'>Hexadepth</p>
+          <p className='text-[#ADB7BE] mb-4 mt-4 max-w-md md:text-2xl text-xl '>
+          Elevate 2D visuals to immersive 6D models, enhancing depth, clarity, and realism through advanced dehazing techniques.
+          </p>
+          <p className='text-[#ADB7BE] mb-4 mt-4  md:text-xl text-lg '>
+           Unlock new dimensions in visual experience !!
           </p>
           <Image className="rounded-md my-5 "
             src='/images/dp-ai.jpeg'

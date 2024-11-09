@@ -1,0 +1,28 @@
+.connected-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .circle-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+    overflow: hidden; /* Ensures content fits within the circle */
+  }
+  
+  .circle-section p {
+    font-size: 0.75rem; /* Adjust font size for better fit */
+    margin: 0.5rem 0;
+    line-height: 1.2;
+  }
+  
+  .circle-section > div {
+    font-size: 0.875rem; /* Size of text in the smaller circles */
+    font-weight: bold;
+  }
+  
