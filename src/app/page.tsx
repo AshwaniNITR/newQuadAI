@@ -10,7 +10,7 @@ export default function Home() {
     <div className="container mt-12 mx-auto px-12 py-4">
     <Sign/>
     <Upload/>
-    <ModelViewer modelPath={`http://127.0.0.1:5000/static/output_model.stl`}/>
+    <ModelViewer modelPath={`http://127.0.0.1:5000/static/output_modell.stl`}/>
     <DehazePage/>
     
     </div>

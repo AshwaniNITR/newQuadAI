@@ -9,7 +9,7 @@ import trimesh
 import shutil
 
 app = Flask(__name__)
-CORS(app,origins='*')
+CORS(app, origins='*')
 
 # Load the model (in this case, any required pre-trained data)
 model_path = "model.pkl"
@@ -23,6 +23,10 @@ else:
 
 # Path to your existing DICOM folder on your desktop
 dicom_dir = r"C:\Users\HP\Desktop\Test"
+
+# Ensure static folder exists
+static_dir = os.path.join(app.root_path, 'static')
+os.makedirs(static_dir, exist_ok=True)
 
 # Create an endpoint to process the DICOM folder and generate 3D model
 @app.route('/generate_3d_model', methods=['POST'])
@@ -49,8 +53,8 @@ def generate_3d_model():
         segmented_volume = (image_array > 0.5)  # Modify threshold as needed
         verts, faces, _, _ = measure.marching_cubes(segmented_volume, step_size=1)
 
-        # Save the 3D model to an STL file
-        stl_file = "output_model.stl"
+        # Save the 3D model to an STL file in the static folder
+        stl_file = os.path.join(static_dir, "output_modell.stl")
         mesh = trimesh.Trimesh(vertices=verts, faces=faces)
         mesh.export(stl_file)
     except Exception as e:
@@ -59,9 +63,9 @@ def generate_3d_model():
     # Return the 3D model file for download
     return send_file(stl_file, as_attachment=True)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
-@app.route('/')
-def index():
-     return render_template('index.html')
