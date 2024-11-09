@@ -1,0 +1,38 @@
+/* @keyframes colorChange {
+  0% {
+    color: #67E331;
+  }
+  100% {
+    color:  #13163F;
+  }
+}
+.animated-text {
+  animation: colorChange 5s ease-in-out infinite;
+} */
+@keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeInRight {
+    0% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .fade-in-up {
+    animation: fadeInUp 2s ease-out forwards;
+  }
+  .fade-in-right {
+    animation: fadeInRight 1s ease-out forwards;
+  }
+  
