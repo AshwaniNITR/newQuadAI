@@ -1,6 +1,7 @@
 import React from 'react';
 import './About.css'; // Ensure this CSS file is created and imported
 import '../SignInUp/Sign.css';
+import Image from 'next/image';
 
 const About = () => {
   return (
@@ -12,6 +13,14 @@ const About = () => {
              <div className='flex flex-col  md:grid md:grid-cols-2 gap-4 items-center text-white bg-gradient-to-br from-[#13163F] to-[#67E331] px-4 py-16 m-4 rounded-lg'>
                 <p className='text-lg py-2 '>This project takes 2D images to new dimensions, converting them into detailed 6D models that capture both spatial and temporal nuances. By integrating image dehazing techniques, it enhances clarity and precision, especially in medical imaging, where accurate visualizations of bones, tissues, and organs are critical for diagnosis and treatment planning. Beyond healthcare, this approach unlocks potential in fields like engineering, archaeology, and robotics, offering richer, multidimensional insights into complex structures. The combination of 6D reconstruction and dehazing ensures more precise, actionable data for decision-making across diverse real-world applications.</p>
         </div>
+    </div>
+    <div className="fade-in-up rounded-md md:hidden h-full flex bg-gray-200 justify-center ">
+    <Image className='p-8'
+            src='/images/x-rayDp.avif'
+            alt='hero-image'
+            height={350}
+            width={550}
+         />
     </div>
     <div className='md:flex w-full hidden'>
     <div className="flex flex-wrap md:justify-between justify-center  my-8 p-4 bg-gray-100  space-x-8 gap-12 w-full ">   

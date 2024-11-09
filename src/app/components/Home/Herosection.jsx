@@ -36,11 +36,11 @@ const Herosection = () => {
         </div>
         </div>
         <div className="col-span-5 place-self-center mt-2 ">
-            <Image className="rounded-lg hidden md:flex place-self-center md:my-5 "
-            src='/images/computer.jpg'
+            <Image className="rounded-lg hidden  md:flex place-self-center md:my-5 "
+            src='/images/healthcare.avif'
             alt='hero-image'
             height={200}
-            width={1000}
+            width={400}
             />
 
         </div>
