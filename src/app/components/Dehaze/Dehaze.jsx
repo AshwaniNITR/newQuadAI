@@ -41,8 +41,8 @@ export default function DehazePage() {
             <button onClick={handleUpload} disabled={!selectedFile}>Upload and Process</button>
             {processedImage && (
                 <div style={{ marginTop: '20px' }}>
-                    <h3>Dehazed Image:</h3>
-                    <img src={processedImage} alt="Dehazed Output" style={{ maxWidth: '100%' }} />
+                    <h3>Processed Image:</h3>
+                    <img src={processedImage} alt="Dehazed Output" style={{ maxWidth: '80%' , maxHeight: '80%'}} />
                 </div>
             )}
         </div>
