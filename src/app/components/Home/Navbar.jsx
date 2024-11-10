@@ -68,7 +68,7 @@ const Navbar = () => {
 
             }
             <Link className="px-4 py-1 mb-2 bg-gradient-to-br from-[#13163F] to-[#67E331] text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300" href={"/"}>
-             Click Me
+             Back
              </Link>
 
           </ul>

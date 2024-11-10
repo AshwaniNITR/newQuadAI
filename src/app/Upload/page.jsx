@@ -66,7 +66,7 @@ export default function UploadDicomFolder() {
                 />
                 <button type="submit"
                 onClick={handleClick} 
-                className='px-6 py-3 my-1 w-fit rounded-full mr-4 bg-white hover:bg-slate-300  text-white bg-gradient-to-br from-[#13163F] to-[#67E331]'>{showMe ? 'Hide it..' : 'Upload and generate 3D Model'}</button> {showMe && <ModelViewer modelPath={`http://127.0.0.1:5000/static/output_model.stl`}/>}
+                className='px-6 py-3 my-1 w-fit rounded-full mr-4 bg-white hover:bg-slate-300  text-white bg-gradient-to-br from-[#13163F] to-[#67E331]'>{showMe ? 'Hide it..' : 'Upload and generate 3D Model'}</button> {showMe && <ModelViewer modelPath={`http://127.0.0.1:5000/static/output_modell.stl`}/>}
                 </div>
             </form>
             {downloadUrl && (
