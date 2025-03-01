@@ -7,11 +7,11 @@ const ModelViewer = ({ modelPath }) => {
   const canvasRef = useRef(null);
   const [engine, setEngine] = useState(null);
   const [scene, setScene] = useState(null);
-
+  console.log(scene);
   useEffect(() => {
     const createScene = (engine) => {
       const scene = new BABYLON.Scene(engine);
-
+      
       // Create camera
       const camera = new BABYLON.ArcRotateCamera(
         "camera1", 

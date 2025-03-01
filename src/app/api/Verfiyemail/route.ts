@@ -1,15 +1,20 @@
 import connectMongo from "@/dbConnect/dbConnect";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
-// import bcryptjs from "bcryptjs";
-// import { sendemail } from "@/helpers/mailer";
+
+// Define an interface for the request body
+interface VerifyEmailRequestBody {
+    params: {
+        token: string;
+    };
+}
 
 connectMongo();
 
 export async function POST(request: NextRequest) {
     try {
         const reqBody = await request.json();
-        const { token } = reqBody.params; // Access token correctly
+        const { token } = (reqBody as VerifyEmailRequestBody).params;
         console.log("Received token:", token);
 
         const user = await User.findOne({
@@ -18,7 +23,10 @@ export async function POST(request: NextRequest) {
         });
 
         if (!user) {
-            return NextResponse.json({ error: "User Does Not Exist" }, { status: 400 });
+            return NextResponse.json(
+                { error: "Invalid or expired verification token" }, 
+                { status: 400 }
+            );
         }
 
         user.isVerified = true;
@@ -27,11 +35,19 @@ export async function POST(request: NextRequest) {
         await user.save();
 
         return NextResponse.json({
-            message: "User Created Successfully",
+            message: "Email verified successfully",
             success: true,
         });
-    } catch (error: any) {
+
+    } catch (error) {
         console.error("Error during email verification:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json(
+            { 
+                error: error instanceof Error 
+                    ? error.message 
+                    : "Email verification failed" 
+            }, 
+            { status: 500 }
+        );
     }
 }

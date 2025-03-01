@@ -2,9 +2,9 @@
 import React from 'react';
 import Navbar from '../components/Home/Navbar';
 import Herosection from '../components/Home/Herosection'
-import Upload from '../Upload/page'
+//import Upload from '../Upload/page'
 import About from '../components/AboutUs/About'
-import Dehaze from '../Dehaze/page'
+//import Dehaze from '../Dehaze/page'
 // import EventPage from '../components/Events/EventsPage'
 import Footer from '../components/Footer/Footer'
 

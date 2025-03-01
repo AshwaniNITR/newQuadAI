@@ -3,21 +3,38 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { sendemail } from "@/helpers/mailer";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+
+// Define interfaces for type safety
+interface SignupRequestBody {
+    username: string;
+    email: string;
+    password: string;
+}
+
+interface TokenData {
+    id: string;
+    username: string;
+    email: string;
+}
+
 connectMongo();
 
 export async function POST(request: NextRequest) {
     try {
-        const reqBody = await request.json(); // Use json() to parse the request body
-        const { username, email, password }: any = reqBody;
+        const reqBody = await request.json();
+        const { username, email, password } = reqBody as SignupRequestBody;
 
         // Validation
-        console.log("Request Body:", reqBody); // Log the request body
+        console.log("Request Body:", reqBody);
 
         // Check if the user already exists
-        const user = await User.findOne({ email }); // Await the promise
+        const user = await User.findOne({ email });
         if (user) {
-            return NextResponse.json({ error: "User Already Exists" }, { status: 400 });
+            return NextResponse.json(
+                { error: "User Already Exists" }, 
+                { status: 400 }
+            );
         }
 
         // Hash the password
@@ -30,33 +47,55 @@ export async function POST(request: NextRequest) {
             email,
             password: hashedpassword,
         });
-        const tokenData={
-            id: newUser._id,
+
+        // Prepare token data
+        const tokenData: TokenData = {
+            id: newUser._id.toString(),
             username: newUser.username,
-            email:newUser.email,
-         }
-         console.log(tokenData)
-         const token= jwt.sign(tokenData,(process.env.TOKEN_SECRET!),{expiresIn:'1d'})
-         console.log(token)
+            email: newUser.email,
+        };
+
+        // Generate JWT token
+        const token = jwt.sign(
+            tokenData, 
+            process.env.TOKEN_SECRET!, 
+            { expiresIn: '1d' }
+        );
+
         // Save the new user
         const savedUser = await newUser.save();
-        console.log("Saved User:", savedUser); // Log the saved user
+        console.log("Saved User:", savedUser);
 
         // Send verification email
-        await sendemail({ email, emailType: "VERIFY", userId: savedUser._id.toString()});
+        await sendemail({ 
+            email, 
+            emailType: "VERIFY", 
+            userId: savedUser._id.toString() 
+        });
       
-        // Return success response
-        const response= NextResponse.json({
+        // Prepare response
+        const response = NextResponse.json({
             message: "User registered Successfully",
             success: true,
-            savedUser: savedUser.toObject(), // Convert Mongoose document to plain object if needed
+            savedUser: savedUser.toObject(),
         });
-        response.cookies.set("token",token,{
-            httpOnly:true
-         })
-         return response
-    } catch (error: any) {
-        console.error("Error during registration:", error); // Log the error for debugging
-        return NextResponse.json({ error: error.message }, { status: 500 });
+
+        // Set token in cookies
+        response.cookies.set("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 // 1 day
+        });
+
+        return response;
+
+    } catch (error) {
+        // Use more specific error handling
+        console.error("Error during registration:", error);
+        return NextResponse.json(
+            { error: error instanceof Error ? error.message : "Registration failed" }, 
+            { status: 500 }
+        );
     }
 }

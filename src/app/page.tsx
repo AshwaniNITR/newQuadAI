@@ -1,5 +1,5 @@
 import { Sign } from "@/app/components/SignInUp/Sign";
-import Image from "next/image";
+//import Image from "next/image";
 // import Upload from "@/app/components/Upload/Upload"
 // import ModelViewer from "@/app/components/ModelViewer/ModelViewer"
 // import DehazePage from "@/app/components/Dehaze/Dehaze"

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Navbar from '../components/Home/Navbar';
 import Footer from '../components/Footer/Footer';
-
+import Image from 'next/image';
 export default function DehazePage() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [processedImage, setProcessedImage] = useState(null);
@@ -70,13 +70,13 @@ export default function DehazePage() {
                             {selectedImageUrl && (
                                 <div>
                                     <h3 className="text-white font-bold">Uploaded Image:</h3>
-                                    <img src={selectedImageUrl} alt="Uploaded Image" style={{ maxWidth: '80%', maxHeight: '80%' }} />
+                                    <Image src={selectedImageUrl} alt="Uploaded Image" style={{ maxWidth: '80%', maxHeight: '80%' }} />
                                 </div>
                             )}
                             {processedImage && (
                                 <div>
                                     <h3 className="text-white font-bold">Dehazed Image:</h3>
-                                    <img src={processedImage} alt="Dehazed Output" style={{ maxWidth: '80%', maxHeight: '80%' }} />
+                                    <Image src={processedImage} alt="Dehazed Output" style={{ maxWidth: '80%', maxHeight: '80%' }} />
                                 </div>
                             )}
                         </div>

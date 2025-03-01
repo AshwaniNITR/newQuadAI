@@ -11,6 +11,7 @@ export const Signup = () => {
   const [loading, setLoading] = useState(false); // New loading state
 
   useEffect(() => {
+    console.log(timestamp);
     setTimestamp(new Date().toLocaleDateString()); // Set timestamp on client side
   }, []);
 

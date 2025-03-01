@@ -1,4 +1,5 @@
 "use client"
+import Image from 'next/image';
 import { useState } from 'react';
 
 export default function DehazePage() {
@@ -42,7 +43,7 @@ export default function DehazePage() {
             {processedImage && (
                 <div style={{ marginTop: '20px' }}>
                     <h3>Processed Image:</h3>
-                    <img src={processedImage} alt="Dehazed Output" style={{ maxWidth: '80%' , maxHeight: '80%'}} />
+                    <Image src={processedImage} alt="Dehazed Output" style={{ maxWidth: '80%' , maxHeight: '80%'}} />
                 </div>
             )}
         </div>

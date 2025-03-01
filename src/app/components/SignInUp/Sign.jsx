@@ -5,7 +5,7 @@ import { Signup } from './SignUp';
 import { SignIn } from './SignIn';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
 import './Sign.css';
 const TAB_DATA = [
   {
@@ -24,12 +24,16 @@ export const Sign = () => {
   const [tab, setTab] = useState("SignUp");
   const [isPending, startTransition] = useTransition();
   const [user, setUser] = useState(false);
-  const router = useRouter();
+  //const router = useRouter();
   
+  
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
         // Fetch current user
+        console.log(user)
+        console.log(isPending);
         const response = await fetch('/api/getCurrentUser'); 
         const data = await response.json(); // Parse JSON from the response
         
