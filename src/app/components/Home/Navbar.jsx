@@ -3,8 +3,6 @@ import Link from "next/link";
 import React, { useState } from "react";
 import NavLink from "./NavLink";
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faBars } from "@fortawesome/free-solid-svg-icons";
 
 import MenuOver from "./MenuOver";
 const navLinks = [
