@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useTransition } from 'react';
 import TabButton from './TabButton';
-import { Signup } from './SignUp';
+import { Signup } from './Signup';
 import { SignIn } from './SignIn';
 import Link from 'next/link';
 import Image from 'next/image';

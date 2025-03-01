@@ -11,6 +11,7 @@
   "dependencies": {
     "@babylonjs/core": "^7.33.0",
     "@babylonjs/loaders": "^7.33.0",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "formidable": "^3.5.2",
