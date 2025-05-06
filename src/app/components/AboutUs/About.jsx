@@ -1,57 +1,88 @@
 import React from 'react';
-import './About.css'; // Ensure this CSS file is created and imported
-import '../SignInUp/Sign.css';
 import Image from 'next/image';
 
 const About = () => {
   return (
-    <section id='About' className='max-h-fit'>
-    <h1 className='fade-in-up text-center pt-0 text-4xl sm:text-5xl lg:text-6xl mt-0 text-transparent bg-clip-text bg-gradient-to-br from-[#13163F] to-[#67E331] font-extrabold'>
-        About us
-    </h1>
-    <div className='md:hidden flex'>
-             <div className='flex flex-col  md:grid md:grid-cols-2 gap-4 items-center text-white bg-gradient-to-br from-[#13163F] to-[#67E331] px-4 py-16 m-4 rounded-lg'>
-                <p className='text-lg py-2 '>This project takes 2D images to new dimensions, converting them into detailed 6D models that capture both spatial and temporal nuances. By integrating image dehazing techniques, it enhances clarity and precision, especially in medical imaging, where accurate visualizations of bones, tissues, and organs are critical for diagnosis and treatment planning. Beyond healthcare, this approach unlocks potential in fields like engineering, archaeology, and robotics, offering richer, multidimensional insights into complex structures. The combination of 6D reconstruction and dehazing ensures more precise, actionable data for decision-making across diverse real-world applications.</p>
+    <section id='About' className="min-h-screen w-full py-20 px-4 md:px-8 bg-gradient-to-br from-[#0a0e2a] to-[#0f1a3a]">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#67E331] to-[#8aff5e] mb-4">
+            About Us
+          </h1>
+          <p className="text-lg text-[#c4d6ff] max-w-3xl mx-auto">
+            Transforming 2D images into immersive 6D experiences with enhanced clarity and precision
+          </p>
         </div>
-    </div>
-    <div className="fade-in-up rounded-md md:hidden h-full flex bg-gray-200 justify-center ">
-    <Image className='p-8'
-            src='/images/x-rayDp.avif'
-            alt='hero-image'
-            height={350}
-            width={550}
-         />
-    </div>
-    <div className='md:flex w-full hidden'>
-    <div className="flex flex-wrap md:justify-between justify-center  my-8 p-4 bg-gray-100  space-x-8 gap-12 w-full ">   
-      <div className="relative fade-in-right md:flex-1  rounded-full w-80 h-80 bg-white shadow-md border border-gray-300 ">
-        <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gradient-to-br from-[#13163F] to-[#67E331] text-white flex items-center justify-center rounded-full shadow-md">
-          Input
-        </div>
-        <div className='circle-section text-center mx-20 mt-16'>
-         <p className='font-semibold text-xl'>The model takes in 2D image slices, such as MRI or X-ray scans, which may initially appear hazy or unclear due to noise, low contrast, or environmental conditions, necessitating dehazing for improved clarity and accurate analysis.</p>
-        </div>
-      </div>
 
-      <div className="relative md:flex-1 fade-in-right rounded-full w-80 h-80 bg-white shadow-md border border-gray-300 ">
-      <div className='circle-section text-center mx-20 mt-16'>
-         <p className='font-semibold text-2xl'>The images are dehazed, enhancing clarity, then reconstructed into 6D models that incorporate both spatial and temporal depth, using advanced algorithms to achieve accurate representations.</p>
+        {/* Mobile View */}
+        <div className="md:hidden space-y-8">
+          <div className="bg-[#13163F]/30 backdrop-blur-lg rounded-3xl p-6 border border-[#67E331]/20 shadow-lg">
+            <p className="text-[#c4d6ff] text-lg leading-relaxed">
+              This project takes 2D images to new dimensions, converting them into detailed 6D models that capture both spatial and temporal nuances. By integrating image dehazing techniques, it enhances clarity and precision, especially in medical imaging.
+            </p>
+          </div>
+          
+          <div className="bg-[#13163F]/30 backdrop-blur-lg rounded-3xl overflow-hidden border border-[#67E331]/20 shadow-lg">
+            <Image 
+              src='/Images/x-rayDp.avif'
+              alt='Medical visualization'
+              width={600}
+              height={400}
+              className="w-full h-auto object-cover"
+            />
+          </div>
         </div>
-        <div className="absolute -bottom-1/4  left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-[#13163F] to-[#67E331] text-white flex items-center justify-center rounded-full shadow-md">
-        Processing
-        </div>
-      </div>
 
-      <div className="relative fade-in-right md:flex-1 grid-rows-2 rounded-full w-80 h-80 bg-white shadow-md border border-gray-300 ">
-        <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-16 h-16 bg-gradient-to-br from-[#13163F] to-[#67E331] text-white flex items-center justify-center rounded-full shadow-md">
-          Output
+        {/* Desktop View */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+          {/* Input Card */}
+          <div className="bg-[#13163F]/30 backdrop-blur-lg rounded-3xl p-8 border border-[#67E331]/20 shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden
+                        before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#67E331]/10 before:to-[#13163F]/20 before:border before:border-[#67E331]/10 before:rounded-3xl before:-z-10">
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-20 h-20 bg-gradient-to-r from-[#13163F] to-[#67E331] text-white flex items-center justify-center rounded-full shadow-lg">
+              <span className="font-medium">Input</span>
+            </div>
+            <div className="mt-16 text-center">
+              <p className="text-[#c4d6ff] text-lg leading-relaxed">
+                The model takes in 2D image slices, such as MRI or X-ray scans, which may initially appear hazy or unclear due to noise, low contrast, or environmental conditions.
+              </p>
+            </div>
+          </div>
+
+          {/* Processing Card */}
+          <div className="bg-[#13163F]/30 backdrop-blur-lg rounded-3xl p-8 border border-[#67E331]/20 shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden
+                        before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#67E331]/10 before:to-[#13163F]/20 before:border before:border-[#67E331]/10 before:rounded-3xl before:-z-10">
+            <div className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 w-20 h-20 bg-gradient-to-r from-[#13163F] to-[#67E331] text-white flex items-center justify-center rounded-full shadow-lg">
+              <span className="font-medium">Process</span>
+            </div>
+            <div className="mb-16 text-center">
+              <p className="text-[#c4d6ff] text-lg leading-relaxed">
+                The images are dehazed, enhancing clarity, then reconstructed into 6D models that incorporate both spatial and temporal depth using advanced algorithms.
+              </p>
+            </div>
+          </div>
+
+          {/* Output Card */}
+          <div className="bg-[#13163F]/30 backdrop-blur-lg rounded-3xl p-8 border border-[#67E331]/20 shadow-lg hover:shadow-xl transition-shadow duration-300 relative overflow-hidden
+                        before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#67E331]/10 before:to-[#13163F]/20 before:border before:border-[#67E331]/10 before:rounded-3xl before:-z-10">
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-20 h-20 bg-gradient-to-r from-[#13163F] to-[#67E331] text-white flex items-center justify-center rounded-full shadow-lg">
+              <span className="font-medium">Output</span>
+            </div>
+            <div className="mt-16 text-center">
+              <p className="text-[#c4d6ff] text-lg leading-relaxed">
+                The output is a detailed 6D model that provides enhanced visualization for improved analysis in medical, engineering, and research applications.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className='circle-section text-center mx-20 mt-16'>
-         <p className='font-semibold text-xl'>The output is a detailed 6D model that provides enhanced visualization, highlighting complex structures for improved analysis and decision-making in medical, engineering, and research applications.</p>
+
+        {/* Full Width Description (Desktop) */}
+        <div className="hidden md:block mt-16 bg-[#13163F]/30 backdrop-blur-lg rounded-3xl p-8 border border-[#67E331]/20 shadow-lg">
+          <p className="text-[#c4d6ff] text-lg leading-relaxed">
+            Beyond healthcare, this approach unlocks potential in fields like engineering, archaeology, and robotics, offering richer, multidimensional insights into complex structures. The combination of 6D reconstruction and dehazing ensures more precise, actionable data for decision-making across diverse real-world applications.
+          </p>
         </div>
       </div>
-    </div>
-    </div>
     </section>
   );
 };

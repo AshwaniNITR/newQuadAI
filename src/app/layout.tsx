@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Script from "next/script";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,11 +25,128 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className='!scroll-smooth'lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html className='!scroll-smooth' lang="en">
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>{`
+          /* Comet Background Styles */
+          @keyframes cometFly {
+            from {
+              transform: translateX(0) translateY(0);
+              opacity: 1;
+            }
+            to {
+              transform: translateX(var(--end-x)) translateY(var(--end-y));
+              opacity: 0;
+            }
+          }
+          
+          #comets {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+          }
+          
+          .comet {
+            position: absolute;
+            background: linear-gradient(90deg, rgb(242, 242, 242) 0%, rgba(100, 200, 255, 0) 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(227, 255, 150, 0.9);
+            --end-x: calc(100vw * var(--direction, 1));
+            filter: blur(0.5px);
+          }
+
+          /* Base Styles */
+          body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020024, #090979, #00d4ff);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+          }
+
+          #root {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+          }
+        `}</style>
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <div id="comets"></div>
         {children}
+        
+        <Script id="comet-animation" strategy="afterInteractive">
+          {`
+            const createComet = () => {
+              const comet = document.createElement('div');
+              comet.className = 'comet';
+              
+              // Random properties
+              const size = 2 + Math.random() * 4;
+              const duration = 3 + Math.random() * 7;
+              const delay = Math.random() * 5;
+              const direction = Math.random() > 0.5 ? 1 : -1;
+              const startX = direction === 1 ? 
+                \`\${-50 - Math.random() * 100}px\` : 
+                \`\${window.innerWidth + 50 + Math.random() * 100}px\`;
+              const startY = \`\${Math.random() * 100}vh\`;
+              const endY = \`\${Math.random() * 100 - 50}px\`;
+              
+              // Apply styles
+              comet.style.cssText = \`
+                width: \${size}px;
+                height: \${size}px;
+                left: \${startX};
+                top: \${startY};
+                --direction: \${direction};
+                --end-y: \${endY};
+                animation: cometFly \${duration}s \${delay}s linear infinite;
+              \`;
+              
+              // Random brightness variation
+              const brightness = 0.8 + Math.random() * 0.5;
+              comet.style.filter = \`blur(\${0.3 + Math.random() * 0.7}px) brightness(\${brightness})\`;
+              
+              document.getElementById('comets').appendChild(comet);
+              
+              // Remove comet after animation completes to prevent DOM bloat
+              setTimeout(() => {
+                comet.remove();
+              }, (duration + delay) * 1000);
+            };
+            
+            // Create initial comets
+            for (let i = 0; i < 80; i++) {
+              createComet();
+            }
+            
+            // Add new comets more frequently
+            setInterval(() => {
+              if (document.querySelectorAll('.comet').length < 100) {
+                createComet();
+              }
+            }, 300);
+            
+            // Adjust comet count when window resizes
+            window.addEventListener('resize', () => {
+              const currentCount = document.querySelectorAll('.comet').length;
+              const targetCount = Math.min(150, Math.floor(window.innerWidth / 10));
+              if (currentCount < targetCount) {
+                for (let i = currentCount; i < targetCount; i++) {
+                  createComet();
+                }
+              }
+            });
+          `}
+        </Script>
       </body>
     </html>
   );

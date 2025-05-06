@@ -1,77 +1,87 @@
 "use client"
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as BABYLON from '@babylonjs/core';
 import '@babylonjs/loaders';
 
-const ModelViewer = ({ modelPath }) => {
-  const canvasRef = useRef(null);
-  const [engine, setEngine] = useState(null);
-  const [scene, setScene] = useState(null);
-  console.log(scene);
-  useEffect(() => {
-    const createScene = (engine) => {
-      const scene = new BABYLON.Scene(engine);
-      
-      // Create camera
-      const camera = new BABYLON.ArcRotateCamera(
-        "camera1", 
-        Math.PI / 2, Math.PI / 2, 
-        10, 
-        BABYLON.Vector3.Zero(), 
-        scene
-      );
-      camera.attachControl(canvasRef.current, true);
-      
-      // Add lights
-      new BABYLON.HemisphericLight("light1", BABYLON.Vector3.Up(), scene);
-      new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0, -1, 1), scene);
+const ModelViewer = ({ modelBlob }) => {
+    console.log("Model Blob:", modelBlob); // Debugging line to check the blob
+    const canvasRef = useRef(null);
 
-      // Load STL model
-      BABYLON.SceneLoader.ImportMesh(
-        '', 
-        '', 
-        modelPath, 
-        scene, 
-        (meshes) => {
-          meshes.forEach((mesh) => {
-            mesh.position = BABYLON.Vector3.Zero();  // Position model
-            mesh.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1); // Scale the model
-          });
-        },
-        null,
-        (scene, error) => {
-          console.error('Error loading model:', error);
-        }
-      );
+    useEffect(() => {
+        if (!modelBlob || !canvasRef.current) return;
 
-      return scene;
-    };
+        const engine = new BABYLON.Engine(canvasRef.current, true);
+        const scene = new BABYLON.Scene(engine);
 
-    if (canvasRef.current) {
-      const engine = new BABYLON.Engine(canvasRef.current, true);
-      setEngine(engine);
+        // Camera setup
+        const camera = new BABYLON.ArcRotateCamera(
+            "camera",
+            -Math.PI / 2,
+            Math.PI / 2,
+            10,
+            BABYLON.Vector3.Zero(),
+            scene
+        );
+        camera.attachControl(canvasRef.current, true);
+        camera.lowerRadiusLimit = 2;
+        camera.upperRadiusLimit = 20;
 
-      const scene = createScene(engine);
-      setScene(scene);
+        // Lighting
+        new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+        new BABYLON.DirectionalLight("dirLight", new BABYLON.Vector3(0, -1, 1), scene);
 
-      engine.runRenderLoop(() => {
-        scene.render();
-      });
+        // Create blob URL for the STL
+        const blobUrl = URL.createObjectURL(modelBlob);
 
-      // Resize the engine when window resizes
-      window.addEventListener('resize', () => {
-        engine.resize();
-      });
-    }
+        // Load STL model
+        BABYLON.SceneLoader.ImportMesh(
+            "",
+            "",
+            blobUrl,
+            scene,
+            (meshes) => {
+                // Center and scale the model
+                const boundingBox = meshes[0].getBoundingInfo().boundingBox;
+                const center = boundingBox.center;
+                const size = boundingBox.extendSize.scale(2);
+                
+                meshes.forEach(mesh => {
+                    mesh.position = center.negate();
+                    const scale = 5 / Math.max(size.x, size.y, size.z);
+                    mesh.scaling = new BABYLON.Vector3(scale, scale, scale);
+                });
+            },
+            null,
+            (_, message) => {
+                console.error("Error loading model:", message);
+            },
+            ".stl"
+        );
 
-    return () => {
-      if (engine) {
-        engine.dispose();
-      }
-    };
-  }, [modelPath]);
+        // Handle resizing
+        const resizeObserver = new ResizeObserver(() => engine.resize());
+        resizeObserver.observe(canvasRef.current);
 
-  return <canvas ref={canvasRef} style={{ width: '100%', height: '500px' }} />;
+        engine.runRenderLoop(() => scene.render());
+
+        return () => {
+            URL.revokeObjectURL(blobUrl);
+            resizeObserver.disconnect();
+            scene.dispose();
+            engine.dispose();
+        };
+    }, [modelBlob]);
+
+    return (
+        <canvas 
+            ref={canvasRef} 
+            style={{ 
+                width: '100%', 
+                height: '500px',
+                outline: 'none'
+            }} 
+        />
+    );
 };
 
 export default ModelViewer;
