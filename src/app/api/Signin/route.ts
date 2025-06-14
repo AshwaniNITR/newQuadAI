@@ -26,7 +26,12 @@ export async function POST(request: NextRequest) {
         // Validation
         console.log("Request Body:", reqBody);
         
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }) as {
+            _id: any;
+            username: string;
+            email: string;
+            password: string;
+        } | null;
         if (!user) {
             return NextResponse.json(
                 { error: "User does not exist" }, 

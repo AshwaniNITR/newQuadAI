@@ -1,35 +1,53 @@
-import { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
+import User from '@/models/userModel';
+//import { NextResponse } from 'next/server';
 
-// Define an interface for the token payload
 interface TokenPayload {
-    id: string;
-    username: string;
-    email: string;
-    iat: number;
-    exp: number;
+  userId: string;
+  email: string;
+  username: string;
 }
 
-export const getdatafromtoken = (request: NextRequest): string => {
-    try {
-        const token = request.cookies.get("token")?.value || "";
-        console.log("token: ", token);
+// Generate tokens
+export const generateTokens = (payload: TokenPayload) => {
+  const accessToken = jwt.sign(
+    payload,
+    process.env.ACCESS_TOKEN_SECRET!,
+    { expiresIn: '30m' }
+  );
 
-        // Type assertion with the defined interface
-        const verifiedToken = jwt.verify(
-            token, 
-            process.env.TOKEN_SECRET!
-        ) as TokenPayload;
+  const refreshToken = jwt.sign(
+    payload,
+    process.env.REFRESH_TOKEN_SECRET!,
+    { expiresIn: '7d' }
+  );
 
-        console.log("verifiedToken : ", verifiedToken);
-        return verifiedToken.id;
+  return { accessToken, refreshToken };
+};
 
-    } catch (error) {
-        // More specific error handling
-        const errorMessage = error instanceof Error 
-            ? error.message 
-            : "Token verification failed";
-        
-        throw new Error(errorMessage);
+// Verify access token
+export const verifyAccessToken = (token: string) => {
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET!) as TokenPayload;
+    return { valid: true, decoded };
+  } catch (error) {
+    return { valid: false, error };
+  }
+};
+
+// Verify refresh token
+export const verifyRefreshToken = async (token: string) => {
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!) as TokenPayload;
+    
+    // Check if token exists in database
+    const user = await User.findById(decoded.userId);
+    if (!user || user.refreshToken !== token) {
+      return { valid: false, error: 'Invalid refresh token' };
     }
+
+    return { valid: true, decoded };
+  } catch (error) {
+    return { valid: false, error };
+  }
 };

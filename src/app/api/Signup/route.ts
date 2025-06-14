@@ -2,7 +2,7 @@ import connectMongo from "@/dbConnect/dbConnect";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
-import { sendemail } from "@/helpers/mailer";
+import { sendEmail } from "@/helpers/mailer";
 import jwt from "jsonwebtoken";
 
 // Define interfaces for type safety
@@ -46,7 +46,12 @@ export async function POST(request: NextRequest) {
             username,
             email,
             password: hashedpassword,
-        });
+        }) as import("mongoose").Document & {
+            _id: import("mongoose").Types.ObjectId;
+            username: string;
+            email: string;
+            password: string;
+        };
 
         // Prepare token data
         const tokenData: TokenData = {
@@ -67,7 +72,7 @@ export async function POST(request: NextRequest) {
         console.log("Saved User:", savedUser);
 
         // Send verification email
-        await sendemail({ 
+        await sendEmail({ 
             email, 
             emailType: "VERIFY", 
             userId: savedUser._id.toString() 

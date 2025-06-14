@@ -1,50 +1,84 @@
-// helpers/mailer.ts
 import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken';
 
-// Interface for email options
-interface MailOptions {
-    email: string;
-    emailType: string;
-    userId: string;
+interface EmailOptions {
+  email: string;
+  emailType: 'VERIFY' | 'RESET';
+  userId: string;
 }
 
-export const sendemail = async ({ email, emailType, userId }: MailOptions) => {
-    try {
-        // Create a transporter using Gmail
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.GMAIL_USER,
-                pass: process.env.GMAIL_APP_PASSWORD, // Use App Password for better security
-            },
-        });
+export const sendEmail = async ({ email, emailType, userId }: EmailOptions) => {
+  try {
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAILER_USER,
+        pass: process.env.MAILER_PASS,
+      },
+    });
 
-        // Determine email subject and HTML based on email type
-        let subject = '';
-        let html = '';
+    // Generate token
+    const token = jwt.sign(
+      { userId, emailType },
+      process.env.TOKEN_SECRET!,
+      { expiresIn: '1h' }
+    );
 
-        if (emailType === "VERIFY") {
-            subject = "Verify your email";
-            html = `<p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${userId}">here</a> to verify your email or copy and paste the link below in your browser.<br>${process.env.DOMAIN}/verifyemail?token=${userId}</p>`;
-        } else if (emailType === "RESET") {
-            subject = "Reset your password";
-            html = `<p>Click <a href="${process.env.DOMAIN}/resetpassword?token=${userId}">here</a> to reset your password.</p>`;
-        }
+    // Email content
+    let subject = '';
+    let html = '';
+    const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
 
-        // Mail options
-        const mailOptions = {
-            from: `"Your App Name" <${process.env.GMAIL_USER}>`,
-            to: email,
-            subject,
-            html,
-        };
-
-        // Send email
-        const mailResponse = await transporter.sendMail(mailOptions);
-        return mailResponse;
-
-    } catch (error) {
-        console.error("Error sending email:", error);
-        throw new Error(error instanceof Error ? error.message : "Email sending failed");
+    if (emailType === 'VERIFY') {
+      subject = 'Verify Your Email Address';
+      html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Welcome to Our App!</h2>
+          <p>Please click the button below to verify your email address:</p>
+          <a href="${baseUrl}/verifyEmail?token=${token}" 
+             style="display: inline-block; padding: 12px 24px; background: #2563eb; color: white; 
+                    text-decoration: none; border-radius: 4px; font-weight: bold; margin: 10px 0;">
+            Verify Email
+          </a>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+          <p style="font-size: 12px; color: #6b7280;">© ${new Date().getFullYear()} Your App Name. All rights reserved.</p>
+        </div>
+      `;
+    } else {
+      subject = 'Password Reset Request';
+      html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #dc2626;">Password Reset</h2>
+          <p>Click the button below to reset your password:</p>
+          <a href="${baseUrl}/reset-password?token=${token}" 
+             style="display: inline-block; padding: 12px 24px; background: #dc2626; color: white; 
+                    text-decoration: none; border-radius: 4px; font-weight: bold; margin: 10px 0;">
+            Reset Password
+          </a>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you didn't request a password reset, please ignore this email.</p>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+          <p style="font-size: 12px; color: #6b7280;">© ${new Date().getFullYear()} Your App Name. All rights reserved.</p>
+        </div>
+      `;
     }
+
+    // Send email
+    await transporter.sendMail({
+      from: `"HexaDepth" <${process.env.MAILER_FROM}>`,
+      to: email,
+      subject,
+      html,
+    });
+
+  } catch (error) {
+    console.error('Email sending failed:', error);
+    throw new Error('Email sending failed');
+  }
 };
