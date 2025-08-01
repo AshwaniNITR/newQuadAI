@@ -2,13 +2,13 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
 
 export default function VerifyEmailPage() {
   const [status, setStatus] = useState<'idle'|'verifying'|'success'|'error'>('idle');
   const [error, setError] = useState('');
   const searchParams = useSearchParams();
-  const router = useRouter();
+  //const router = useRouter();
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -55,6 +55,7 @@ export default function VerifyEmailPage() {
     };
 
     verifyToken();
+    
   }, [searchParams]);
 
   const renderStatus = () => {
