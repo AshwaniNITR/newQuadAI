@@ -46,12 +46,7 @@ export async function POST(request: NextRequest) {
             username,
             email,
             password: hashedpassword,
-        }) as import("mongoose").Document & {
-            _id: import("mongoose").Types.ObjectId;
-            username: string;
-            email: string;
-            password: string;
-        };
+        });
 
         // Prepare token data
         const tokenData: TokenData = {
