@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({ user }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ user: null }, { status: 200 });
+    console.log(error);
+    return NextResponse.json({ user: null }, { status: 200 },);
   }
 }

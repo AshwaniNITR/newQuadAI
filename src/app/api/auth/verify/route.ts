@@ -4,6 +4,25 @@ import jwt from 'jsonwebtoken';
 import User from '@/models/userModel';
 import connectMongo from '@/dbConnect/dbConnect';
 
+// Define interfaces for better type safety
+interface JWTPayload {
+  userId: string;
+  emailType: string;
+}
+
+interface UserDocument {
+  _id: string;
+  email: string;
+  isVerified: boolean;
+  refreshToken?: string;
+  save(): Promise<UserDocument>;
+}
+
+interface TokenPair {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
     await connectMongo();
@@ -18,10 +37,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Verify token
-    const decoded = jwt.verify(token, process.env.TOKEN_SECRET!) as {
-      userId: string;
-      emailType: string;
-    };
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET!) as JWTPayload;
 
     if (decoded.emailType !== 'VERIFY') {
       if (isApiRequest) {
@@ -31,7 +47,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Find and update user
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.userId) as UserDocument | null;
     if (!user) {
       if (isApiRequest) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
@@ -42,7 +58,7 @@ export async function GET(request: NextRequest) {
     if (user.isVerified) {
       const { accessToken, refreshToken } = await generateAndSetTokens(user);
       if (isApiRequest) {
-        return NextResponse.json({ 
+        return NextResponse.json({
           success: true,
           message: 'Email already verified',
           accessToken
@@ -56,7 +72,7 @@ export async function GET(request: NextRequest) {
     await user.save();
 
     if (isApiRequest) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         success: true,
         message: 'Email verified successfully',
         accessToken
@@ -67,7 +83,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Verification error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Verification failed';
-    
+        
     if (request.headers.get('accept')?.includes('application/json')) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
@@ -75,7 +91,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function generateAndSetTokens(user: any) {
+async function generateAndSetTokens(user: UserDocument): Promise<TokenPair> {
   const accessToken = jwt.sign(
     { userId: user._id.toString(), email: user.email },
     process.env.ACCESS_TOKEN_SECRET!,
@@ -90,13 +106,18 @@ async function generateAndSetTokens(user: any) {
 
   user.refreshToken = refreshToken;
   await user.save();
-  
+
   return { accessToken, refreshToken };
 }
 
-function createAuthResponse(redirectPath: string, accessToken: string, refreshToken: string, request: NextRequest) {
+function createAuthResponse(
+  redirectPath: string, 
+  accessToken: string, 
+  refreshToken: string, 
+  request: NextRequest
+): NextResponse {
   const response = NextResponse.redirect(new URL(redirectPath, request.url));
-  
+
   response.cookies.set('accessToken', accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',

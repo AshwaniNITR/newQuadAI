@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       isVerified: false,
     });
 
-    const savedUser = await newUser.save() as typeof newUser & { _id: any };
+    const savedUser = await newUser.save() as typeof newUser & { _id: string };
 
     // Send verification email
     await sendEmail({
