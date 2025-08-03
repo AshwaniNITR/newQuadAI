@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
       accessToken,
     });
 
-    // Set HTTP-only cookie for refresh token
-    response.cookies.set('refreshToken', refreshToken, {
+    // Set HTTP-only cookie for access token
+    response.cookies.set('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
