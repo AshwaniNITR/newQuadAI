@@ -6,7 +6,7 @@ const protectedRoutes = ['/home'];
 
 export default async function middleware(request: NextRequest) {
   if (protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
-    const accessToken = request.cookies.get('accessToken')?.value;
+    //const accessToken = request.cookies.get('accessToken')?.value;
     //console.log("AccessToken",accessToken)
     const response = await fetch(new URL('/api/auth/session', request.url), {
       headers: { Cookie: request.cookies.toString() }

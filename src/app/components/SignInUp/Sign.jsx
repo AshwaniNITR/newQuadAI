@@ -55,27 +55,27 @@ export const Sign = () => {
   const selectedTab = TAB_DATA.find((t) => t.id === tab);
 
   return (
-    <section className="min-h-screen  px-4 py-12 sm:px-6 lg:px-8">
+    <section className="min-h-screen px-4 py-8 sm:py-12 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className='text-center text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-12'>
+        <h1 className='text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-8 sm:mb-12'>
           <span className="bg-gradient-to-r from-emerald-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent animate-text">
             Welcome To Hexadepth
           </span>
         </h1>
 
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-          <div className='bg-blue-900/20 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-white/10 shadow-2xl shadow-blue-900/30 hover:shadow-emerald-400/20 transition-all duration-500'>
-            <p className='font-bold mb-6 text-4xl md:text-5xl bg-gradient-to-r from-emerald-300 to-blue-300 bg-clip-text text-transparent'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8'>
+          <div className='bg-blue-900/20 backdrop-blur-md rounded-3xl p-4 sm:p-6 md:p-8 border border-white/10 shadow-2xl shadow-blue-900/30 hover:shadow-emerald-400/20 transition-all duration-500'>
+            <p className='font-bold mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl bg-gradient-to-r from-emerald-300 to-blue-300 bg-clip-text text-transparent'>
               Hexadepth
             </p>
-            <p className='text-blue-100 mb-6 text-lg md:text-xl leading-relaxed'>
+            <p className='text-blue-100 mb-4 sm:mb-6 text-base sm:text-lg md:text-xl leading-relaxed'>
               Elevate 2D visuals to immersive 6D models, enhancing depth, clarity, and realism through advanced dehazing techniques.
             </p>
-            <p className='text-emerald-200 mb-8 text-xl md:text-2xl font-medium'>
+            <p className='text-emerald-200 mb-6 sm:mb-8 text-lg sm:text-xl md:text-2xl font-medium'>
               Unlock new dimensions in visual experience!
             </p>
             
-            <div className="relative w-full h-64 md:h-80 mb-8 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+            <div className="relative w-full h-48 sm:h-64 md:h-80 mb-6 sm:mb-8 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
               <Image 
                 src='/Images/dp-ai.jpeg'
                 alt='hero-image'
@@ -86,7 +86,7 @@ export const Sign = () => {
             </div>
             
             <Link 
-              className="inline-flex items-center justify-center w-full md:w-auto px-8 py-3.5 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-emerald-500 rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-emerald-400/40 transition-all duration-300 hover:scale-[1.02]"
+              className="inline-flex items-center justify-center w-full px-6 py-3 sm:px-8 sm:py-3.5 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-emerald-500 rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-emerald-400/40 transition-all duration-300 hover:scale-[1.02]"
               href={"/home"}
             >
               Explore Now
@@ -96,8 +96,8 @@ export const Sign = () => {
             </Link>
           </div>
 
-          <div className='bg-gradient-to-br from-blue-900/40 to-emerald-500/20 backdrop-blur-lg rounded-3xl p-6 md:p-8 border border-white/10 shadow-2xl shadow-blue-900/30 hover:shadow-emerald-400/20 transition-all duration-500'>
-            <div className='flex flex-row justify-center space-x-4 mb-8'>
+          <div className='bg-gradient-to-br from-blue-900/40 to-emerald-500/20 backdrop-blur-lg rounded-3xl p-4 sm:p-6 md:p-8 border border-white/10 shadow-2xl shadow-blue-900/30 hover:shadow-emerald-400/20 transition-all duration-500'>
+            <div className='flex flex-row justify-center space-x-3 sm:space-x-4 mb-6 sm:mb-8'>
               <TabButton
                 selectTab={() => handleTabChange('SignUp')}
                 active={tab === 'SignUp'}
@@ -112,7 +112,7 @@ export const Sign = () => {
               </TabButton>
             </div>
             
-            <div className='mt-6'>
+            <div className='mt-4 sm:mt-6'>
               {selectedTab ? selectedTab.thing : <p className="text-blue-200">Tab not found</p>}
             </div>
           </div> 

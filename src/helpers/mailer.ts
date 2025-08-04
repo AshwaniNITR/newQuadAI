@@ -31,7 +31,7 @@ export const sendEmail = async ({ email, emailType, userId }: EmailOptions) => {
     // Email content
     let subject = '';
     let html = '';
-    const baseUrl = process.env.BASE_URL || 'https://latest-quad.vercel.app/';
+    const baseUrl = process.env.BASE_URL || 'https://latest-quad.vercel.app';
 
     if (emailType === 'VERIFY') {
       subject = 'Verify Your Email Address';
