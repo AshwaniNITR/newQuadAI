@@ -81,12 +81,16 @@ export async function POST(request: NextRequest) {
         });
 
         // Set token in cookies
-        response.cookies.set("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 24 * 60 * 60 // 1 day
-        });
+      // Set token in cookies
+response.cookies.set("token", token, {
+  httpOnly: true,
+  secure: true, // Always require HTTPS in production
+  sameSite: 'none', // Required for cross-site/cross-domain usage
+  maxAge: 24 * 60 * 60, // 1 day
+  path: '/',
+  // Add if using multiple subdomains (e.g., api.domain.com and app.domain.com)
+  domain: '.vercel.app' // Note the leading dot
+});
 
         return response;
 

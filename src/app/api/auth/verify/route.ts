@@ -119,12 +119,14 @@ function createAuthResponse(
   const response = NextResponse.redirect(new URL(redirectPath, request.url));
 
   response.cookies.set('accessToken', accessToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 15 * 60,
-    path: '/',
-  });
+  httpOnly: true,
+  secure: true, // Always true in production (requires HTTPS)
+  sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
+  maxAge: 7 * 24 * 60 * 60,
+  path: '/',
+  // Add if you're using multiple subdomains:
+  domain: '.vercel.app'
+});
 
   response.cookies.set('refreshToken', refreshToken, {
     httpOnly: true,

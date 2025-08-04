@@ -71,13 +71,15 @@ export async function POST(request: NextRequest) {
     });
 
     // Set HTTP-only cookie for access token
-    response.cookies.set('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-      path: '/',
-    });
+   response.cookies.set('accessToken', accessToken, {
+  httpOnly: true,
+  secure: true, // Always true in production (requires HTTPS)
+  sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
+  maxAge: 7 * 24 * 60 * 60,
+  path: '/',
+  // Add if you're using multiple subdomains:
+  domain: '.vercel.app' // Note the leading dot
+});
 
     return response;
 
