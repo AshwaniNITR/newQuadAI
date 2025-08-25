@@ -90,7 +90,7 @@ export async function POST(request: Request) {
         secure: true, //set true in prod
         sameSite: "lax", // less restrictive for cross-origin requests
         path: "/",
-        domain: ".latest-quad.vercel.app/", // note the dot for subdomain coverage
+        domain: ".latest-quad.vercel.app", // note the dot for subdomain coverage
         maxAge: 7 * 24 * 60 * 60, // in seconds
       });
       
