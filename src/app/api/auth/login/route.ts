@@ -1,91 +1,108 @@
-import { NextRequest, NextResponse } from 'next/server';
-import bcryptjs from 'bcryptjs';
-import User from '@/models/userModel';
-import { generateTokens } from '@/helpers/getToken';
-import connectMongo from '@/dbConnect/dbConnect';
-
-export async function POST(request: NextRequest) {
+import { NextResponse } from "next/server";
+import bcryptjs from "bcryptjs";
+import User from "../../../../models/userModel";
+import connectMongo from "../../../../dbConnect/dbConnect";
+import { generateTokens } from "../../../../helpers/getToken";
+export const dynamic = "force-dynamic";
+export async function POST(request: Request) {
   try {
     await connectMongo();
     const reqBody = await request.json();
-    const { email, password } = reqBody;
+    const { email, password} = reqBody;    
+      // Regular email/password login flow
+     if (!email || !password) {
+        return NextResponse.json(
+          { error: "Email and password are required" },
+          { status: 400 }
+        );
+      }
 
-    // Validate input
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email and password are required' },
-        { status: 400 }
+      console.log(`Email: ${email}, Password: ${password}`);
+      const normalizedEmail = email.toLowerCase();
+      const user = await User.findOne({ email: normalizedEmail }).select(
+        "+password +refreshToken"
       );
-    }
+      console.log(`User found: ${user ? "Yes" : "No"}`);
+      console.log(user);
 
-    // Check if user exists
-    const user = await User.findOne({ email }) as {
-      _id: { toString: () => string },
-      email: string,
-      username: string,
-      password: string,
-      isVerified: boolean,
-      refreshToken?: string,
-      save: () => Promise<void>
-    } | null;
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
-    }
+      if (!user) {
+        return NextResponse.json(
+          { error: "Invalid email or password" },
+          { status: 401 }
+        );
+      }
+      // Verify password
+      if (!user.password) {
+        return NextResponse.json(
+          { error: "Invalid email or password" },
+          { status: 401 }
+        );
+      }
 
-    // Check if password is correct
-    const validPassword = await bcryptjs.compare(password, user.password);
-    if (!validPassword) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      );
-    }
+      const isValidPassword = await bcryptjs.compare(password, user.password);
+      if (!isValidPassword) {
+        return NextResponse.json(
+          { error: "Invalid email or password" },
+          { status: 401 }
+        );
+      }
 
-    // Check if email is verified
-    if (!user.isVerified) {
-      return NextResponse.json(
-        { error: 'Please verify your email first' },
-        { status: 403 }
-      );
-    }
+      // Optional: Check if email is verified
+      if (!user.isVerified) {
+        return NextResponse.json(
+          {
+            error: "Please verify your email before logging in",
+            needsVerification: true,
+          },
+          { status: 403 }
+        );
+      }
 
-    // Generate tokens
-    const { accessToken, refreshToken } = generateTokens({
-      userId: user._id.toString(),
-      email: user.email,
-      username: user.username,
-    });
+      // Generate new tokens
+      const tokenPayload = {
+        userId: user._id.toString(),
+        email: user.email,
+        username: user.username,
+      };
 
-    // Save refresh token to database
-    user.refreshToken = refreshToken;
-    await user.save();
+      const { accessToken, refreshToken } = generateTokens(tokenPayload);
 
-    // Create response
-    const response = NextResponse.json({
-      success: true,
-      message: 'Login successful',
-      accessToken,
-    });
+      // Store new refresh token in database
+      user.refreshToken = refreshToken;
+      await user.save();
 
-    // Set HTTP-only cookie for access token
-   response.cookies.set('accessToken', accessToken, {
-  httpOnly: true,
-  secure: true, // Always true in production (requires HTTPS)
-  sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
-  maxAge: 7 * 24 * 60 * 60,
-  path: '/',
-  // Add if you're using multiple subdomains:
-  domain: '.vercel.app' // Note the leading dot
-});
+      // Set refresh token as httpOnly cookie
+      const response = NextResponse.json({
+        success: true,
+        message: "Login successful",
+        accessToken,
+        user: {
+          id: user._id,
+          email: user.email,
+          username: user.username,
+          isVerified: user.isVerified,
+        },
+      });
 
-    return response;
-
+    
+      response.cookies.set("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true, //set true in prod
+        sameSite: "lax", // less restrictive for cross-origin requests
+        path: "/",
+        domain: ".latest-quad.vercel.app/", // note the dot for subdomain coverage
+        maxAge: 7 * 24 * 60 * 60, // in seconds
+      });
+      
+      return response;
+    
   } catch (error: unknown) {
+    console.error("Login Error:", error);
     return NextResponse.json(
-      { error: typeof error === 'object' && error !== null && 'message' in error ? (error as { message: string }).message : 'Internal Server Error' },
+      {
+        error: "An error occurred during login",
+        details: error instanceof Error ? error.message : undefined,
+      },
       { status: 500 }
     );
   }
