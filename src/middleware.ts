@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const protectedRoutes = ['/home'];
+const protectedRoutes = ['/home','/Upload','/Dehaze'];
 
 export default async function middleware(request: NextRequest) {
   if (protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
@@ -33,5 +33,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/home']
+  matcher: ['/home','/Upload','/Dehaze']
 };
