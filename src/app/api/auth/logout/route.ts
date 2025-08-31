@@ -1,35 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
+import crypto from 'crypto';
 import User from '@/models/userModel';
 import connectMongo from '@/dbConnect/dbConnect';
-
 
 export async function POST(request: NextRequest) {
   try {
     await connectMongo();
+    
     const refreshToken = request.cookies.get('refreshToken')?.value;
-
+    
     if (refreshToken) {
-      // Remove refresh token from database
-      await User.findOneAndUpdate(
-        { refreshToken },
+      // Hash the refresh token and remove from database
+      const hashedToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+      
+      await User.updateOne(
+        { refreshToken: { $regex: `^${hashedToken}:` } },
         { $unset: { refreshToken: 1 } }
       );
     }
-
-    // Create response
-    const response = NextResponse.json({
-      success: true,
-      message: 'Logout successful',
-    });
-
-    // Clear cookie
+    
+    // Create response and clear all auth cookies
+    const response = NextResponse.json({ success: true, message: 'Logged out successfully' });
+    
+    // Clear all auth cookies
+    response.cookies.delete('accessToken');
     response.cookies.delete('refreshToken');
-
+    response.cookies.delete('csrfToken');
+    response.cookies.delete('X-CSRF-Token');
+    
     return response;
-
-  } catch (error: unknown) {
+    
+  } catch (error) {
+    console.error('Logout error:', error);
     return NextResponse.json(
-      { error: typeof error === 'object' && error !== null && 'message' in error ? (error as { message: string }).message : 'Internal Server Error' },
+      { error: 'Logout failed' },
       { status: 500 }
     );
   }

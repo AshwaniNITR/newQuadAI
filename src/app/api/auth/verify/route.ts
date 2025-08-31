@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import User from '@/models/userModel';
 import connectMongo from '@/dbConnect/dbConnect';
+import crypto from 'crypto';
 
-// Define interfaces for better type safety
 interface JWTPayload {
   userId: string;
   emailType: string;
@@ -16,11 +16,6 @@ interface UserDocument {
   isVerified: boolean;
   refreshToken?: string;
   save(): Promise<UserDocument>;
-}
-
-interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
 }
 
 export async function GET(request: NextRequest) {
@@ -55,30 +50,42 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/verification-failed?error=user_not_found', request.url));
     }
 
+    // Generate tokens and CSRF token
+    const csrfToken = generateCSRFToken();
+    
     if (user.isVerified) {
+      // User already verified - generate new tokens
       const { accessToken, refreshToken } = await generateAndSetTokens(user);
+      
       if (isApiRequest) {
-        return NextResponse.json({
+        const response = NextResponse.json({
           success: true,
           message: 'Email already verified',
-          accessToken
+          accessToken,
+          user: { id: user._id, email: user.email }
         });
+        return setAuthCookies(response, accessToken, refreshToken, csrfToken);
       }
-      return createAuthResponse('/home', accessToken, refreshToken, request);
+      
+      return createAuthResponse('/home', accessToken, refreshToken, csrfToken, request);
     }
 
+    // Mark user as verified and generate tokens
     user.isVerified = true;
     const { accessToken, refreshToken } = await generateAndSetTokens(user);
     await user.save();
 
     if (isApiRequest) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         success: true,
         message: 'Email verified successfully',
-        accessToken
+        accessToken,
+        user: { id: user._id, email: user.email }
       });
+      return setAuthCookies(response, accessToken, refreshToken, csrfToken);
     }
-    return createAuthResponse('/home', accessToken, refreshToken, request);
+
+    return createAuthResponse('/home', accessToken, refreshToken, csrfToken, request);
 
   } catch (error) {
     console.error('Verification error:', error);
@@ -91,48 +98,86 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function generateAndSetTokens(user: UserDocument): Promise<TokenPair> {
+async function generateAndSetTokens(user: UserDocument): Promise<{ accessToken: string; refreshToken: string }> {
+  // Generate access token
   const accessToken = jwt.sign(
     { userId: user._id.toString(), email: user.email },
     process.env.ACCESS_TOKEN_SECRET!,
     { expiresIn: '15m' }
   );
 
+  // Generate refresh token
   const refreshToken = jwt.sign(
     { userId: user._id.toString() },
     process.env.REFRESH_TOKEN_SECRET!,
     { expiresIn: '7d' }
   );
 
-  user.refreshToken = refreshToken;
+  // Hash and store refresh token with expiry
+  const hashedRefreshToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+  const refreshTokenExpires = Date.now() + (7 * 24 * 60 * 60 * 1000);
+  const tokenWithExpiry = `${hashedRefreshToken}:${refreshTokenExpires}`;
+  
+  user.refreshToken = tokenWithExpiry;
   await user.save();
 
   return { accessToken, refreshToken };
 }
 
+function generateCSRFToken(): string {
+  return crypto.randomBytes(32).toString('hex');
+}
+
 function createAuthResponse(
   redirectPath: string, 
   accessToken: string, 
-  refreshToken: string, 
+  refreshToken: string,
+  csrfToken: string,
   request: NextRequest
 ): NextResponse {
   const response = NextResponse.redirect(new URL(redirectPath, request.url));
+  return setAuthCookies(response, accessToken, refreshToken, csrfToken);
+}
 
+function setAuthCookies(
+  response: NextResponse, 
+  accessToken: string, 
+  refreshToken: string, 
+  csrfToken: string
+): NextResponse {
+  // Set access token cookie
   response.cookies.set('accessToken', accessToken, {
-  httpOnly: true,
-  secure: true, // Always true in production (requires HTTPS)
-  sameSite: process.env.NODE_ENV === 'development' ? 'lax' : 'none',
-  maxAge: 7 * 24 * 60 * 60,
-  path: '/',
-  // Add if you're using multiple subdomains:
-  domain: '.vercel.app'
-});
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 15 * 60, // 15 minutes
+    path: '/',
+  });
 
+  // Set refresh token cookie
   response.cookies.set('refreshToken', refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+    path: '/',
+  });
+
+  // Set CSRF token cookie (HTTP-only for security)
+  response.cookies.set('csrfToken', csrfToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+    path: '/',
+  });
+
+  // Set client-accessible CSRF token
+  response.cookies.set('X-CSRF-Token', csrfToken, {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60, // 7 days
     path: '/',
   });
 
