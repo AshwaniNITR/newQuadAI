@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Define protected routes
-const protectedRoutes = ['/home', '/Upload', '/Dehaze'];
+const protectedRoutes = ['/home', '/Upload', '/Dehaze','/api/generate_3d_model'];
 const authRoutes = ['/login', '/register', '/signup', '/auth'];
 const publicRoutes = ['/', '/about', '/contact', '/api/auth/refresh'];
 
@@ -58,7 +58,7 @@ export function middleware(request: NextRequest) {
     // If no tokens at all, redirect to login
     if (!accessToken && !refreshToken) {
       console.log('❌ No tokens - redirecting to login');
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/', request.url));
     }
     
     // If we have an access token, let it through (the API will validate it)

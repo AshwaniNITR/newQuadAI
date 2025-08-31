@@ -76,7 +76,7 @@ export default function DicomUploader() {
         formData.append('dicom_files', file);
       });
 
-      const response = await fetch('https://hexa-api-latest.onrender.com/generate_3d_model', {
+      const response = await fetch('/api/generate_3d_model', {
         method: 'POST',
         body: formData,
       });
